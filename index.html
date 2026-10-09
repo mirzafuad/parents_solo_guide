@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111316">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Parents' NYC Guide</title>
+<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+body{margin:0}[hidden]{display:none!important}img{max-width:100%}
+/* Layout: one phone-width column under a black station-sign header, a fixed three-tab bar at the bottom, one big action per screen. */
+:root{
+  --ground:#F1F3F6; --card:#FFFFFF; --ink:#12151A; --muted:#48515E; --line:#C5CCD6;
+  --sign:#111316; --sign-ink:#FFFFFF; --sign-edge:#111316;
+  --e:#0039A6; --f:#FF6319; --bullet-ink:#FFFFFF; --bullet-ring:transparent;
+  --e-line:#0039A6; --f-line:#FF6319; --link:#0039A6; --tint:#E2E9F6;
+  --here:#FCCC0A; --here-ink:#12151A;
+  --go:#0B7A3B; --go-ink:#FFFFFF; --stop:#C4161C; --stop-ink:#FFFFFF;
+  --warn:#FFF1BF; --warn-ink:#3F3200;
+  --food:#0B7A3B; --mosque:#0B6E8A; --wc:#6B3FA0; --sight:#B4470E; --pin-ink:#FFFFFF;
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'Atkinson Hyperlegible',Verdana,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1013; --card:#1A1D22; --ink:#F3F4F1; --muted:#B7BFCB; --line:#3B424D;
+    --sign:#000000; --sign-edge:#3B424D; --bullet-ring:rgba(255,255,255,.5);
+    --e-line:#6B96FF; --link:#A9C1FF; --tint:#1A2740;
+    --go:#35B36B; --go-ink:#04140A; --stop:#FF6B6B; --stop-ink:#200000;
+    --warn:#3A2F00; --warn-ink:#FFE78F;
+    --food:#35B36B; --mosque:#4FC3E0; --wc:#C4A1F5; --sight:#FF9F66; --pin-ink:#0E1013;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1013; --card:#1A1D22; --ink:#F3F4F1; --muted:#B7BFCB; --line:#3B424D;
+  --sign:#000000; --sign-edge:#3B424D; --bullet-ring:rgba(255,255,255,.5);
+  --e-line:#6B96FF; --link:#A9C1FF; --tint:#1A2740;
+  --go:#35B36B; --go-ink:#04140A; --stop:#FF6B6B; --stop-ink:#200000;
+  --warn:#3A2F00; --warn-ink:#FFE78F;
+  --food:#35B36B; --mosque:#4FC3E0; --wc:#C4A1F5; --sight:#FF9F66; --pin-ink:#0E1013;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--link)}
+:focus-visible{outline:3px solid var(--here);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+
+.app{max-width:520px;margin-inline:auto}
+.top{position:relative;background:var(--sign);color:var(--sign-ink);border-bottom:1px solid var(--sign-edge);padding:14px 16px 12px}
+.top::before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;background:var(--sign-ink)}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
+.brand{font:800 20px/1.1 var(--display);letter-spacing:.01em}
+.seg{display:flex;border:2px solid var(--sign-ink);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;color:var(--sign-ink);border:0;padding:8px 14px;font:600 16px var(--display);min-height:44px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sign-ink);color:var(--sign)}
+.demo-note{font-size:14px;opacity:.85;margin-top:8px}
+
+main{padding-inline:16px;padding-block:16px 120px;display:flex;flex-direction:column;gap:16px}
+main.family{padding-block:16px 40px}
+
+.eyebrow{font:600 14px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h2{font:800 28px/1.15 var(--display);text-wrap:balance}
+h3{font:800 21px/1.2 var(--display);text-wrap:balance}
+.lead{font-size:20px}
+.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;width:100%;min-height:64px;padding:12px 18px;border-radius:12px;border:2px solid var(--ink);background:var(--card);color:var(--ink);font:800 20px/1.2 var(--display);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--go);border-color:var(--go);color:var(--go-ink)}
+.btn.alert{background:var(--stop);border-color:var(--stop);color:var(--stop-ink)}
+.btn.small{min-height:48px;font-size:17px;width:auto}
+.linkbtn{background:none;border:0;padding:10px 4px;color:var(--link);text-decoration:underline;font-size:17px;cursor:pointer;align-self:center;min-height:44px}
+
+.days{display:flex;gap:8px;flex-wrap:wrap}
+.days button{flex:0 0 auto;min-height:52px;padding:8px 14px;border-radius:10px;border:2px solid var(--line);background:var(--card);font:600 17px var(--display);cursor:pointer}
+.days button[aria-pressed="true"]{background:var(--here);color:var(--here-ink);border-color:var(--here-ink)}
+
+.b{display:inline-grid;place-items:center;flex:0 0 auto;width:1.6em;height:1.6em;border-radius:50%;font:800 1em/1 var(--display);color:var(--bullet-ink);box-shadow:0 0 0 2px var(--bullet-ring)}
+.b.E,.b.A,.b.C{background:var(--e)} .b.F{background:var(--f)}
+
+.sign{position:relative;background:var(--sign);color:var(--sign-ink);border:1px solid var(--sign-edge);border-radius:6px;padding:20px 16px 16px;font-family:var(--display);display:flex;flex-direction:column;gap:8px}
+.sign::before{content:"";position:absolute;left:0;right:0;top:8px;height:2px;background:var(--sign-ink)}
+.sign-top{font-weight:800;font-size:26px;line-height:1.1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sign-sub{font-weight:600;font-size:17px}
+.sign-cap{font:400 15px var(--body);color:var(--muted)}
+
+.route{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:r}
+.route li{counter-increment:r;display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:start}
+.route li::before{content:counter(r);font:800 16px var(--display);width:32px;height:32px;border-radius:8px;background:var(--tint);display:grid;place-items:center}
+.route .b{vertical-align:middle;margin-right:4px}
+.bs{display:inline-flex;gap:8px;white-space:nowrap}
+
+.jhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.count{font:800 17px var(--display);font-variant-numeric:tabular-nums}
+.bar{display:flex;gap:4px}
+.bar i{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.bar i.on{background:var(--go)}
+
+.tip{background:var(--tint);border-radius:10px;padding:12px 14px;font-size:17px}
+.ask{border:2px dashed var(--ink);border-radius:10px;padding:12px 14px}
+.ask q{display:block;font:800 22px/1.2 var(--display);margin-top:6px;quotes:none}
+
+.status{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.big-n{font:800 72px/1 var(--display);font-variant-numeric:tabular-nums;min-width:1.2ch;text-align:center}
+.status dl{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.status dt{font:600 13px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.status dd{margin:0;font:800 20px/1.2 var(--display)}
+.banner{border-radius:10px;padding:14px;font:800 21px/1.25 var(--display)}
+.banner.warn{background:var(--here);color:var(--here-ink)}
+.banner.go{background:var(--go);color:var(--go-ink)}
+.banner.bad{background:var(--stop);color:var(--stop-ink)}
+.banner p{font:400 18px/1.4 var(--body);margin-top:8px}
+
+.stops{list-style:none;margin:0;padding:0}
+.stops li{position:relative;display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:center;min-height:46px;padding:4px 8px 4px 0;border-radius:8px}
+.stops li::before{content:"";position:absolute;left:11px;top:0;bottom:0;width:6px;background:var(--lc)}
+.stops li:first-child::before{top:50%} .stops li:last-child::before{bottom:50%}
+.stops .dot{position:relative;z-index:1;width:20px;height:20px;margin-left:4px;border-radius:50%;background:var(--card);border:4px solid var(--lc)}
+.stops li.done{color:var(--muted)} .stops li.done .dot{background:var(--lc)}
+.stops li.here{background:var(--here);color:var(--here-ink);font-weight:700}
+.stops li.here .dot{background:var(--here-ink);border-color:var(--here-ink)}
+.stops .tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:6px;background:var(--go);color:var(--go-ink);font:800 13px var(--display);letter-spacing:.04em;text-transform:uppercase}
+.stops .tag.you{background:var(--here-ink);color:var(--here)}
+
+.demo{border:2px dashed var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.demo .eyebrow{font-size:13px}
+.demo-row{display:flex;gap:8px;flex-wrap:wrap}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button{flex:0 0 auto;min-height:46px;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-size:16px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+
+.radar{width:100%;max-width:360px;align-self:center;display:block}
+.radar .ring{fill:none;stroke:var(--line);stroke-width:1.5}
+.radar .rl{fill:var(--muted);font:600 11px var(--display)}
+.radar .pin text{fill:var(--pin-ink);font:800 13px var(--display)}
+.radar .pin circle{stroke:var(--card);stroke-width:2}
+.radar .you{fill:var(--here);stroke:var(--here-ink);stroke-width:3}
+.radar .youl{fill:var(--ink);font:800 12px var(--display)}
+.t-food{--pc:var(--food)} .t-mosque{--pc:var(--mosque)} .t-wc{--pc:var(--wc)} .t-sight{--pc:var(--sight)}
+.radar .pin circle{fill:var(--pc)}
+
+.places{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.places li{display:grid;grid-template-columns:36px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.places li:first-child{border-top:0}
+.num{width:32px;height:32px;border-radius:50%;background:var(--pc);color:var(--pin-ink);display:grid;place-items:center;font:800 15px var(--display)}
+.pl-main{min-width:0;display:flex;flex-direction:column;gap:4px}
+.pl-name{font:800 19px/1.2 var(--display)}
+.pl-type{font:600 13px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--pc)}
+.pl-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.walk{font:800 17px var(--display);font-variant-numeric:tabular-nums}
+
+.showcard{border:3px solid var(--ink);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.showcard .lead{font:800 22px/1.25 var(--display)}
+.phone{font:800 26px var(--display);font-variant-numeric:tabular-nums;user-select:all;overflow-wrap:anywhere}
+.pic{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pic svg,.pic img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
+.pic img{max-height:340px;object-fit:cover}
+.pic figcaption{font-size:15px;color:var(--muted)}
+.scene text{font-family:var(--display)}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+label.btn{position:relative}
+label.btn:focus-within{outline:3px solid var(--here);outline-offset:2px}
+.slot{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:2px solid var(--ink);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs-in{max-width:520px;margin-inline:auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.tabs button{background:transparent;border:0;min-height:68px;font:800 19px var(--display);cursor:pointer;border-top:6px solid transparent}
+.tabs button[aria-pressed="true"]{border-top-color:var(--here);background:var(--tint)}
+.tabs .help{color:var(--stop)}
+
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-weight:700;font-size:16px}
+.field input,.field select{min-height:52px;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);width:100%;min-width:0}
+.hint{font-size:15px;color:var(--muted)}
+.err{color:var(--stop);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr}}
+.fam-pl{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
+.fam-pl input[type=checkbox]{width:24px;height:24px;margin-top:2px;accent-color:var(--go)}
+.fam-pl .ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.fam-pl select{min-height:44px;border-radius:8px;border:2px solid var(--line);background:var(--card);padding:4px 8px;max-width:100%}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--stop);color:var(--stop-ink);font:800 14px var(--display)}
+.done-pill{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--go);color:var(--go-ink);font:800 14px var(--display)}
+@media (prefers-reduced-motion:no-preference){.banner.warn,.banner.go,.banner.bad{animation:pop .25s ease-out}@keyframes pop{from{transform:scale(.97)}to{transform:none}}}
+
+html{-webkit-text-size-adjust:100%}
+.setup-btn{background:transparent;color:var(--sign-ink);border:2px solid var(--sign-ink);border-radius:8px;padding:8px 14px;font:600 16px var(--display);min-height:44px;cursor:pointer}
+.checks{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="top-row">
+      <div class="brand">Parents' NYC Guide</div>
+      <button type="button" class="setup-btn" id="mode-btn" data-act="mode" data-v="family">Setup</button>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Guide sections"></nav>
+<script>
+/* ---------- Data ---------- */
+const E_LINE=[['wtc','World Trade Center'],['canal','Canal St'],['spring','Spring St'],['w4','W 4 St–Wash Sq'],['14','14 St'],['23','23 St'],
+  ['penn','34 St–Penn Station'],['pabt','42 St–Port Authority'],['50','50 St'],['7av','7 Av'],['5av','5 Av/53 St'],['lex','Lexington Av/53 St'],
+  ['court','Court Sq–23 St'],['qp','Queens Plaza'],['roos','Jackson Hts–Roosevelt Av'],['71','Forest Hills–71 Av'],['75','75 Av',1],
+  ['kew','Kew Gardens–Union Tpke'],['bri','Briarwood',1],['vw','Jamaica–Van Wyck'],['sutA','Sutphin Blvd–Archer Av–JFK'],['jc','Jamaica Center–Parsons/Archer']]
+  .map(([id,n,wk])=>({id,n,wk:!!wk}));
+const F_LINE=[['kew','Kew Gardens–Union Tpke'],['briF','Briarwood'],['sutF','Sutphin Blvd'],['parF','Parsons Blvd'],['169','169 St'],['179','Jamaica–179 St']]
+  .map(([id,n])=>({id,n,wk:false}));
+const STOP={}; [...E_LINE,...F_LINE].forEach(s=>STOP[s.id]=s.n);
+const LL={wtc:[40.712582,-74.009781],canal:[40.720824,-74.005229],spring:[40.726227,-74.003739],w4:[40.732338,-74.000495],'14':[40.740893,-74.00169],'23':[40.745906,-73.998041],
+  penn:[40.752287,-73.993391],pabt:[40.757308,-73.989735],'50':[40.762456,-73.985984],'7av':[40.762862,-73.981637],'5av':[40.760167,-73.975224],lex:[40.757552,-73.969055],
+  court:[40.747846,-73.946],qp:[40.748973,-73.937243],roos:[40.746644,-73.891338],'71':[40.721691,-73.844521],'75':[40.718331,-73.837324],kew:[40.714441,-73.831008],
+  bri:[40.709179,-73.820574],vw:[40.702566,-73.816859],sutA:[40.700486,-73.807969],jc:[40.702147,-73.801109],
+  briF:[40.709179,-73.820574],sutF:[40.70546,-73.810708],parF:[40.707564,-73.803326],'169':[40.71047,-73.793604],'179':[40.712646,-73.783817]};
+const nm=id=>STOP[id]||id;
+const MANH_TRUNK=['wtc','canal','spring','w4','14','23','penn','pabt','50'];
+const TOWARDS={EQ:'Jamaica Center',EM:'World Trade Center',FQ:'Jamaica–179 St',FM:'Manhattan'};
+const COLOR={E:'blue',F:'orange'};
+const HOME_OPTS=[['179','Jamaica–179 St (F train), closest to Hollis'],['169','169 St (F train)'],['parF','Parsons Blvd (F train)'],['sutF','Sutphin Blvd (F train)'],
+  ['jc','Jamaica Center–Parsons/Archer (E train)'],['sutA','Sutphin Blvd–Archer Av (E train)'],['vw','Jamaica–Van Wyck (E train)']];
+const DAYS=[
+  {id:'10',date:'2026-10-10',label:'Sat 10 Oct',kind:'arrive',arrKey:'arr10',title:'Arrive in New York, then go home to Jamaica'},
+  {id:'11',date:'2026-10-11',label:'Sun 11',kind:'visit',title:'A day in Manhattan'},
+  {id:'12',date:'2026-10-12',label:'Mon 12',kind:'visit',title:'A day in Manhattan'},
+  {id:'13',date:'2026-10-13',label:'Tue 13',kind:'depart',dest:'Niagara Falls',depKey:'dep13',title:'Train to Niagara Falls'},
+  {id:'away',label:'14 to 19',kind:'away',title:'Niagara Falls and Toronto'},
+  {id:'20',date:'2026-10-20',label:'Tue 20',kind:'arrive',arrKey:'arr20',title:'Back in New York, then go home to Jamaica'},
+  {id:'21',date:'2026-10-21',label:'Wed 21',kind:'depart',dest:'Washington DC',depKey:'dep21',title:'Train to Washington DC'}];
+const AREAS={
+  penn:{n:'Penn Station',lat:40.7520,lng:-73.9933},
+  times:{n:'Times Square',lat:40.7580,lng:-73.9855},
+  rock:{n:'5th Avenue and 53rd St',lat:40.7602,lng:-73.9752},
+  wtc:{n:'World Trade Center',lat:40.7126,lng:-74.0099},
+  jam:{n:'Jamaica, Hillside Avenue',lat:40.7105,lng:-73.7935}};
+const TYPE={food:'Halal food',mosque:'Mosque',wc:'Restroom',sight:'Place to visit'};
+const DEFAULT_PLACES=[
+  {id:'p1',type:'food',name:'The Halal Guys (food cart)',addr:'W 53rd St and 6th Ave, New York, NY',lat:40.7618,lng:-73.9793,note:'Chicken and rice plates. Eat standing or on a bench.'},
+  {id:'p2',type:'food',name:'Star Kabab',addr:'168-21 Hillside Ave, Jamaica, NY',lat:40.7107,lng:-73.7940,note:'Bangladeshi food. Breakfast, lunch and dinner.'},
+  {id:'p3',type:'food',name:'Khalil Biryani House',addr:'167-20 Hillside Ave, Jamaica, NY',lat:40.7104,lng:-73.7950,note:'Biryani, naan, bhorta.'},
+  {id:'p4',type:'food',name:'Dhaka Sweets and Restaurant',addr:'168-32 Hillside Ave, Jamaica, NY',lat:40.7106,lng:-73.7937,note:'Sweets and meals.'},
+  {id:'p5',type:'food',name:'Halal Dynasty',addr:'172-33 Hillside Ave, Jamaica, NY',lat:40.7114,lng:-73.7903,note:'Halal Chinese food.'},
+  {id:'p6',type:'food',name:"Shah's Halal Food",addr:'Homelawn St and Hillside Ave, Jamaica, NY',lat:40.7110,lng:-73.7925,note:'Rice plates and gyros.'},
+  {id:'p7',type:'mosque',name:'Jamaica Muslim Center (Masjid Al-Mamoor)',addr:'85-37 168th St, Jamaica, NY',lat:40.7139,lng:-73.7962,note:'Large mosque with a separate prayer room for women. Washrooms inside.'},
+  {id:'p8',type:'mosque',name:'Masjid Ar-Rahman',addr:'15 W 29th St, New York, NY',lat:40.7456,lng:-73.9876,note:'Busy Midtown mosque. Wudu area inside.'},
+  {id:'p9',type:'mosque',name:'Islamic Society of Mid-Manhattan',addr:'154 E 55th St, New York, NY',lat:40.7596,lng:-73.9690,note:'Easy to miss from the street. Several floors inside, with a wudu area.'},
+  {id:'p10',type:'wc',name:'Moynihan Train Hall restrooms',addr:'421 8th Ave, New York, NY',lat:40.7516,lng:-73.9957,note:'Free. On the main floor and the lower floor.'},
+  {id:'p11',type:'wc',name:'Bryant Park public restroom',addr:'W 42nd St near 6th Ave, New York, NY',lat:40.7540,lng:-73.9838,note:'Free and clean. Next to the library.'},
+  {id:'p12',type:'wc',name:'Rockefeller Center lower concourse restrooms',addr:'30 Rockefeller Plaza, New York, NY',lat:40.7589,lng:-73.9790,note:'Go down one level, below the street.'},
+  {id:'p13',type:'wc',name:'Oculus restrooms (World Trade Center)',addr:'185 Greenwich St, New York, NY',lat:40.7114,lng:-74.0113,note:'Inside the white shopping hall.'},
+  {id:'p14',type:'sight',name:'Times Square',addr:'Broadway and W 45th St, New York, NY',lat:40.7580,lng:-73.9855,stop:'pabt',day:'11',walk:'Walk east along 42nd Street to Broadway. It is one long block, about 8 minutes.'},
+  {id:'p15',type:'sight',name:'Bryant Park',addr:'W 42nd St and 6th Ave, New York, NY',lat:40.7536,lng:-73.9832,stop:'pabt',day:'11',walk:'From 42 St–Port Authority station, walk east along 42nd Street past Broadway to 6th Avenue. About 12 minutes. There are free chairs and a restroom.'},
+  {id:'p16',type:'sight',name:'9/11 Memorial',addr:'180 Greenwich St, New York, NY',lat:40.7115,lng:-74.0134,stop:'wtc',day:'12',walk:'This is the last stop of the E train. Follow the signs that say 9/11 Memorial. About 5 minutes.'},
+  {id:'p17',type:'sight',name:'Rockefeller Center',addr:'45 Rockefeller Plaza, New York, NY',lat:40.7587,lng:-73.9787,stop:'5av',day:'12',walk:'Walk south on 5th Avenue for 3 blocks, to 50th Street. About 6 minutes.'},
+  {id:'p18',type:'sight',name:'Empire State Building',addr:'20 W 34th St, New York, NY',lat:40.7484,lng:-73.9857,stop:'penn',day:'',walk:'Walk east along 34th Street to 5th Avenue. About 15 minutes.'},
+  {id:'p19',type:'sight',name:'Central Park (south corner)',addr:'5th Ave and E 59th St, New York, NY',lat:40.7644,lng:-73.9731,stop:'5av',day:'',walk:'Walk north on 5th Avenue for 6 blocks, to 59th Street. About 10 minutes.'},
+  {id:'p20',type:'sight',name:'Staten Island Ferry (free, with a view of the Statue of Liberty)',addr:'4 Whitehall St, New York, NY',lat:40.7013,lng:-74.0132,stop:'wtc',day:'',walk:'It is about 20 minutes on foot from the station. A taxi is easier.'}
+].map(p=>({on:true,...p}));
+
+/* ---------- State ---------- */
+const STORE='parents-nyc-guide-v1';
+const homeWalk=()=>S.set.homeStop==='179'&&/187/.test(S.set.homeAddr)?'On foot it is about 15 minutes. Walk along Hillside Avenue so the street numbers go up: 180, 181, and on to 187th Street. That is about 8 short blocks. Turn right on 187th Street. The house is a short way down. With heavy bags, a car is easier.':'';
+const S={mode:'guide',tab:'today',day:'10',at:null,journey:null,area:null,filter:'all',alerts:[],progress:null,done:{},asked:false,formErr:'',
+  set:{homeStop:'179',homeAddr:'',relName:'',relPhone:'',famName:'',famPhone:'',dep13:'',dep21:'',arr10:'',arr20:''},
+  places:JSON.parse(JSON.stringify(DEFAULT_PLACES))};
+function load(){try{const d=JSON.parse(localStorage.getItem(STORE)||'null');if(d){Object.assign(S.set,d.set||{});if(Array.isArray(d.places))S.places=d.places}}catch(e){}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify({set:S.set,places:S.places}))}catch(e){}}
+S.photos={};S.photoMsg='';S.setupMsg='';S.setupErr='';S.copyMsg='';S.offline=false;
+const PSTORE=STORE+'-photos';
+function loadPhotos(){try{const d=JSON.parse(localStorage.getItem(PSTORE)||'null');if(d&&typeof d==='object')S.photos=d}catch(e){}}
+function savePhotos(){try{localStorage.setItem(PSTORE,JSON.stringify(S.photos));return true}catch(e){return false}}
+
+/* ---------- Helpers ---------- */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const enc=encodeURIComponent;
+const maps=q=>'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination='+enc(q);
+const bullet=l=>`<span class="b ${l}" aria-label="${l} train">${l}</span>`;
+const dayObj=()=>DAYS.find(d=>d.id===S.day);
+const isWeekend=d=>{if(!d.date)return false;const w=new Date(d.date+'T12:00:00').getDay(),n=new Date(),h=n.getHours()+n.getMinutes()/60;return w===0||w===6||h>=19.5||h<6.5};
+const home=()=>S.set.homeStop;
+const dayStart=d=>d.kind==='arrive'?'penn':home();
+const fmtTime=d=>d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+function clock(hhmm,minus=0){const[h,m]=hhmm.split(':').map(Number);let t=((h*60+m-minus)%1440+1440)%1440;const H=Math.floor(t/60),M=t%60;return{text:`${H%12||12}:${String(M).padStart(2,'0')} ${H<12?'AM':'PM'}`,mins:t}}
+const digits=n=>{const d=String(n).replace(/\D/g,'');return d.length===10?'1'+d:d};
+const tel=n=>'tel:+'+digits(n);
+function carMsg(){const f=freshFix(180);return`We need a car. We are near ${whereNow()}.`+(f?` Map: https://maps.google.com/?q=${f.lat.toFixed(5)},${f.lng.toFixed(5)}`:'')+(S.set.homeAddr?` Take us to ${S.set.homeAddr}.`:'')}
+const smsLink=()=>`sms:+${digits(S.set.famPhone)}?body=${enc(carMsg())}`;
+const waLink=()=>`https://wa.me/${digits(S.set.famPhone)}?text=${enc(carMsg())}`;
+const buzz=()=>{try{navigator.vibrate&&navigator.vibrate([300,150,300])}catch(e){}};
+
+/* ---------- Location ---------- */
+const GEO={fix:null,state:'off',watch:null,lastDraw:0};
+const dist=(a,b,c,d)=>Math.hypot((d-b)*Math.cos(a*Math.PI/180)*111320,(c-a)*110540);
+const freshFix=(sec=90)=>GEO.fix&&Date.now()-GEO.fix.t<sec*1000?GEO.fix:null;
+function startGeo(){
+  if(!('geolocation' in navigator)){GEO.state='none';return}
+  if(GEO.watch!=null)return;
+  GEO.state='asking';
+  GEO.watch=navigator.geolocation.watchPosition(
+    p=>{const first=GEO.state!=='on';GEO.state='on';GEO.fix={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()};onFix(first)},
+    e=>{if(e.code===1){GEO.state='denied';navigator.geolocation.clearWatch(GEO.watch);GEO.watch=null;if(S.mode==='guide'&&S.tab==='nearby')render()}},
+    {enableHighAccuracy:true,maximumAge:10000,timeout:60000});
+}
+function onFix(first){
+  const f=GEO.fix,j=S.journey;let changed=false;
+  if(j&&j.ride&&!j.ride.off&&!j.ride.asking&&f.acc<=200){
+    const leg=j.steps[j.i].leg,r=j.ride;let best=-1,bd=250;
+    leg.stops.forEach((x,i)=>{const p=LL[x.id];if(!p)return;const d=dist(f.lat,f.lng,p[0],p[1]);if(d<bd){bd=d;best=i}});
+    if(best>r.idx){r.idx=best;r.boarded=true;changed=true}
+    else if(best<0&&r.boarded&&f.acc<=120){const m=leg.sims.find(m=>m.ll&&dist(f.lat,f.lng,m.ll[0],m.ll[1])<200);if(m){r.off=m;changed=true}}
+  }
+  if(changed){report();buzz();render(true);return}
+  if(S.mode==='guide'&&S.tab==='nearby'&&!S.area&&(first||Date.now()-GEO.lastDraw>20000))render();
+}
+
+/* ---------- Setup link: carries settings between phones, never stored in the code ---------- */
+const TIME=/^\d\d:\d\d$/;
+function cleanPlace(p,i){return{id:/^[\w-]{1,24}$/.test(p.id)?p.id:'i'+i,type:p.type,name:String(p.name).slice(0,120),addr:String(p.addr||'').slice(0,200),note:String(p.note||'').slice(0,300),
+  lat:Number.isFinite(p.lat)?p.lat:null,lng:Number.isFinite(p.lng)?p.lng:null,area:AREAS[p.area]?p.area:'penn',on:p.on!==false,
+  ...(p.type==='sight'?{stop:E_LINE.some(x=>x.id===p.stop&&!x.wk)?p.stop:'penn',day:['11','12'].includes(p.day)?p.day:'',walk:String(p.walk||'').slice(0,300)}:{})}}
+function encodeSetup(){return btoa(unescape(encodeURIComponent(JSON.stringify({v:1,set:S.set,places:S.places})))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+const shareLink=()=>location.origin+location.pathname+'#s='+encodeSetup();
+function importSetup(){
+  const m=location.hash.match(/^#s=([\w-]+)/);if(!m)return;
+  try{
+    const d=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')))));
+    if(!d||typeof d.set!=='object')throw 0;
+    for(const k of Object.keys(S.set)){const v=d.set[k];if(typeof v!=='string')continue;
+      if(k==='homeStop'){if(HOME_OPTS.some(o=>o[0]===v))S.set[k]=v}
+      else if(/^(dep|arr)/.test(k)){if(v===''||TIME.test(v))S.set[k]=v}
+      else S.set[k]=v.slice(0,200)}
+    if(Array.isArray(d.places))S.places=d.places.filter(p=>p&&typeof p.name==='string'&&TYPE[p.type]).slice(0,80).map(cleanPlace);
+    save();S.setupMsg='Setup saved on this phone.';
+  }catch(e){S.setupErr='That setup link is not complete. Ask for it to be sent again.'}
+  S.mode='family';
+  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+}
+/* ---------- Step pictures (drawn, so they work with no internet) ---------- */
+const P=(inner,alt)=>`<svg class="scene" viewBox="0 0 360 220" role="img" aria-label="${esc(alt)}">${inner}</svg>`;
+const bl=(x,y,r,l)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${l==='F'?'#FF6319':'#0039A6'}"/><text x="${x}" y="${y+r*.4}" text-anchor="middle" font-size="${r*1.2}" font-weight="800" fill="#fff">${l}</text>`;
+const person=(x,y,k,c)=>`<circle cx="${x}" cy="${y-30*k}" r="${6*k}" fill="${c}"/><rect x="${x-7*k}" y="${y-23*k}" width="${14*k}" height="${23*k}" rx="${5*k}" fill="${c}"/>`;
+const lab=(x,y,t,a='start')=>{const w=t.length*6.6,x0=a==='end'?x-w:a==='middle'?x-w/2:x;
+  return`<rect x="${x0-6}" y="${y-13}" width="${w+12}" height="18" rx="5" fill="#fff" fill-opacity=".94"/><text x="${x0}" y="${y}" font-size="12" font-weight="800" fill="#12151A" textLength="${w}" lengthAdjust="spacingAndGlyphs">${esc(t)}</text>`};
+function hang(cx,y,g,o={}){
+  const fs=o.fs||19,r=fs*.62,tw=g.top.length*fs*.6,bw=g.bullets.length*(2*r+5),aw=o.arrow?28:0,sub=g.sub&&!o.nosub,sw=sub?g.sub.length*6.3:0;
+  const w=Math.max(24+tw+(bw?bw+6:0)+aw,24+sw),h=sub?fs+36:fs+22,x=Math.min(Math.max(cx-w/2,4),356-w),by=y+14+fs*.5;
+  let s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#111316"/><rect x="${x}" y="${y+5}" width="${w}" height="2" fill="#fff"/>
+    <text x="${x+12}" y="${by+fs*.36}" font-size="${fs}" font-weight="800" fill="#fff" textLength="${tw}" lengthAdjust="spacingAndGlyphs">${esc(g.top)}</text>`;
+  g.bullets.forEach((l,i)=>s+=bl(x+12+tw+8+r+i*(2*r+5),by,r,l));
+  if(o.arrow){const ax=x+w-17;s+=`<path d="${o.arrow==='down'?`M${ax},${by-9}v13m-7,-6l7,8l7,-8`:`M${ax},${by+9}v-13m-7,6l7,-8l7,8`}" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`}
+  if(sub)s+=`<text x="${x+12}" y="${y+h-9}" font-size="12" font-weight="600" fill="#fff" textLength="${sw}" lengthAdjust="spacingAndGlyphs">${esc(g.sub)}</text>`;
+  return{s,x,w,h};
+}
+function escalator(dir,ac){
+  let s='';
+  if(dir==='up'){
+    for(let i=0;i<7;i++)s+=`<rect x="${205+i*20}" y="${205-(i+1)*12.3}" width="20.5" height="${(i+1)*12.3+15}" fill="#5F6873"/>`;
+    s+=`<rect x="345" y="119" width="15" height="101" fill="#8B9099"/><path d="M186,181H205L345,95H360" fill="none" stroke="#111316" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M236,126L280,99m-14,-2l14,2l-5,13" fill="none" stroke="${ac}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }else{
+    s+=`<rect x="0" y="120" width="205" height="100" fill="#8B9099"/>`;
+    for(let i=0;i<7;i++)s+=`<rect x="${205+i*20}" y="${120+(i+1)*12.3}" width="20.5" height="${100-(i+1)*12.3}" fill="#5F6873"/>`;
+    s+=`<rect x="345" y="206" width="15" height="14" fill="#8B9099"/><path d="M186,96H205L345,182H360" fill="none" stroke="#111316" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M262,104L306,131m-5,-13l5,13l-14,2" fill="none" stroke="${ac}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  return s;
+}
+const SCENE={
+  amtrak(){const h=hang(262,12,{top:'Moynihan Train Hall',bullets:[]},{fs:15,arrow:'up'});
+    return P(`<rect width="360" height="220" fill="#2A2E35"/>
+      <rect x="-10" y="70" width="176" height="135" rx="6" fill="#C9CED6"/><rect x="-10" y="138" width="176" height="10" fill="#17477E"/><rect x="-10" y="150" width="176" height="3" fill="#C4161C"/>
+      <rect x="10" y="88" width="36" height="32" rx="4" fill="#3A4656"/><rect x="56" y="88" width="36" height="32" rx="4" fill="#3A4656"/>
+      <rect x="108" y="84" width="42" height="121" rx="3" fill="#F3E9C6"/>
+      <rect y="205" width="360" height="15" fill="#8B9099"/><rect y="205" width="170" height="4" fill="#FCCC0A"/>
+      ${h.s}${escalator('up','#FCCC0A')}
+      ${person(129,205,1.5,'#2E3A4B')}<rect x="146" y="184" width="16" height="21" rx="3" fill="#7A4B2A"/>${person(184,205,1.3,'#B9C2CE')}
+      ${lab(10,62,'Your train')}${lab(350,70,'Escalator going up','end')}`,'Drawing: an Amtrak train at the platform, an escalator going up, and a sign for Moynihan Train Hall');},
+  hall(){let r='';for(let i=0;i<3;i++){const x=i*120;r+=`<path d="M${x},92Q${x+60},-12 ${x+120},92Z" fill="#BFE0F5" stroke="#5B6470" stroke-width="3"/><path d="M${x+14},92Q${x+60},18 ${x+106},92M${x+30},92V56M${x+60},92V42M${x+90},92V56" fill="none" stroke="#5B6470" stroke-width="1.5"/>`}
+    let rows='';for(let i=0;i<3;i++)rows+=`<rect x="106" y="${124+i*10}" width="${[120,96,132][i]}" height="5" rx="2" fill="#F2C94C"/>`;
+    return P(`<rect width="360" height="220" fill="#DCD6C8"/>${r}<rect y="90" width="360" height="7" fill="#5B6470"/>
+      <rect x="179" y="40" width="2" height="22" fill="#333"/><circle cx="180" cy="76" r="15" fill="#fff" stroke="#2B2B2B" stroke-width="4"/><path d="M180,66V76L187,80" fill="none" stroke="#2B2B2B" stroke-width="2.5" stroke-linecap="round"/>
+      <rect x="96" y="116" width="168" height="40" rx="2" fill="#111316"/>${rows}
+      <rect y="178" width="360" height="42" fill="#EDE8DD"/>
+      ${person(40,200,1.3,'#2E3A4B')}${person(84,212,1.5,'#7A4B2A')}${person(150,196,1.1,'#56637A')}${person(232,204,1.3,'#8A3B3B')}${person(300,212,1.5,'#2E3A4B')}${person(330,198,1.1,'#6B5B3A')}
+      ${lab(10,112,'Glass roof')}${lab(206,74,'Hanging clock')}${lab(274,172,'Train board')}`,'Drawing: Moynihan Train Hall, a big hall with a glass roof, a hanging clock and a train board');},
+  overhead(pic,sign){const dn=pic.arrow==='down',fy=dn?120:205,h=hang(180,26,sign,{arrow:pic.arrow});
+    return P(`<rect width="360" height="220" fill="#E7E3DA"/><rect width="360" height="14" fill="#B9B4A8"/>
+      <rect x="${h.x+16}" y="14" width="3" height="12" fill="#555"/><rect x="${h.x+h.w-19}" y="14" width="3" height="12" fill="#555"/>${h.s}
+      ${dn?'':'<rect y="205" width="360" height="15" fill="#8B9099"/>'}${escalator(pic.arrow,'#111316')}
+      ${person(40,fy,1.5,'#2E3A4B')}${person(88,fy,1.3,'#7A4B2A')}
+      ${dn?lab(10,212,'Escalator going down'):lab(350,212,'Escalator going up','end')}`,`Drawing: a black sign hanging from the ceiling that says ${sign.top} ${sign.bullets.join(' ')}, above an escalator going ${dn?'down':'up'}`);},
+  gate(){let u='',t='';for(let x=0;x<360;x+=40)t+=`<rect x="${x}" width="1" height="186" fill="#D5D8DC"/>`;for(let y=31;y<186;y+=31)t+=`<rect y="${y}" width="360" height="1" fill="#D5D8DC"/>`;
+    [40,150,260].forEach((x,i)=>{u+=`<rect x="${x}" y="100" width="60" height="88" rx="6" fill="#C4C9D0" stroke="#8D949D" stroke-width="2"/><rect x="${x+8}" y="62" width="44" height="42" rx="5" fill="#16181C"/><rect x="${x+13}" y="67" width="34" height="24" rx="2" fill="${i===1?'#0B7A3B':'#1D4FA3'}"/><text x="${x+30}" y="${i===1?85:83}" text-anchor="middle" font-size="${i===1?15:10}" font-weight="800" fill="#fff">${i===1?'GO':'TAP'}</text>`;
+      if(i<2)u+=`<rect x="${x+60}" y="128" width="50" height="7" rx="3" fill="#8D949D"/><rect x="${x+60}" y="150" width="38" height="6" rx="3" fill="#8D949D" transform="rotate(24 ${x+60} 153)"/>`});
+    return P(`<rect width="360" height="220" fill="#EDEEF0"/>${t}<rect y="186" width="360" height="34" fill="#9A9DA3"/>${u}
+      <rect x="216" y="40" width="46" height="30" rx="4" fill="#2F6FDE" transform="rotate(-16 239 55)"/><rect x="224" y="50" width="10" height="8" rx="2" fill="#F2C94C" transform="rotate(-16 239 55)"/>
+      <path d="M208,66q-6,7 -1,15M199,61q-10,11 -3,24" fill="none" stroke="#12151A" stroke-width="3" stroke-linecap="round"/>
+      ${lab(352,26,'Tap your card on the small screen','end')}${lab(180,212,'Walk through when it says GO','middle')}`,'Drawing: subway gates with a small screen on top. A bank card is tapped on the screen and it says GO');},
+  platform(pic,sign){const h=hang(128,30,sign,{fs:17,nosub:true});
+    return P(`<rect width="360" height="220" fill="#EEF0F2"/><rect width="360" height="18" fill="#3A3F47"/><rect y="46" width="360" height="10" fill="#7A8794"/>
+      <rect y="150" width="360" height="30" fill="#2A2E35"/>
+      <rect x="214" y="66" width="160" height="100" rx="8" fill="#C9CED6"/><rect x="214" y="142" width="160" height="3" fill="#AEB4BD"/>
+      <rect x="226" y="82" width="36" height="40" rx="4" fill="#2B3440"/><rect x="274" y="76" width="40" height="90" rx="3" fill="#B7BDC6" stroke="#7E8791" stroke-width="2"/><rect x="281" y="84" width="26" height="36" rx="3" fill="#2B3440"/>${bl(338,102,15,pic.line)}
+      <rect x="${h.x+16}" y="18" width="3" height="12" fill="#555"/><rect x="${h.x+h.w-19}" y="18" width="3" height="12" fill="#555"/>${h.s}
+      <rect y="176" width="360" height="44" fill="#9A9DA3"/><rect y="176" width="360" height="8" fill="#FCCC0A"/>
+      ${person(50,216,1.6,'#2E3A4B')}${person(104,214,1.4,'#7A4B2A')}
+      ${lab(140,170,'Stay behind the yellow line')}`,`Drawing: a subway platform with a hanging black sign that says ${sign.top} ${sign.bullets.join(' ')}, a yellow line at the edge, and a train with the letter ${pic.line}`);},
+  train(pic){return P(`<rect width="360" height="220" fill="#2A2E35"/>
+      <rect x="-10" y="20" width="380" height="156" rx="10" fill="#C9CED6"/><rect x="-10" y="146" width="380" height="2" fill="#AEB4BD"/><rect x="-10" y="156" width="380" height="2" fill="#AEB4BD"/>
+      <rect x="66" y="30" width="228" height="32" rx="3" fill="#0B0C0E"/>${bl(86,46,12,pic.line)}<text x="106" y="52" font-size="16" font-weight="800" fill="#fff" textLength="${pic.towards.length*9.6}" lengthAdjust="spacingAndGlyphs">${esc(pic.towards)}</text>
+      <rect x="14" y="76" width="70" height="44" rx="5" fill="#2B3440"/><rect x="276" y="76" width="70" height="44" rx="5" fill="#2B3440"/>
+      <rect x="126" y="72" width="53" height="104" rx="3" fill="#B7BDC6" stroke="#7E8791" stroke-width="2"/><rect x="181" y="72" width="53" height="104" rx="3" fill="#B7BDC6" stroke="#7E8791" stroke-width="2"/>
+      <rect x="137" y="82" width="31" height="40" rx="4" fill="#2B3440"/><rect x="192" y="82" width="31" height="40" rx="4" fill="#2B3440"/>
+      <rect y="176" width="360" height="44" fill="#9A9DA3"/><rect y="176" width="360" height="8" fill="#FCCC0A"/>
+      ${lab(180,208,`Check the letter ${pic.line} on the side of the train`,'middle')}`,`Drawing: the side of a silver subway train. The sign above the doors shows the letter ${pic.line} in ${pic.line==='F'?'an orange':'a blue'} circle and the words ${pic.towards}`);},
+  exit(){let st='';for(let i=1;i<8;i++){const y=220-i*18.75,hw=90-i*5;st+=`<rect x="${180-hw}" y="${y}" width="${hw*2}" height="2" fill="#8E897D"/>`}
+    return P(`<rect width="360" height="220" fill="#CFCABD"/><rect x="130" y="34" width="100" height="40" fill="#BFE0F5"/>
+      <polygon points="90,220 270,220 230,70 130,70" fill="#B9B4A8"/>${st}
+      <path d="M100,196L133,84M260,196L227,84" stroke="#111316" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <rect x="92" y="4" width="176" height="30" rx="3" fill="#111316"/><rect x="100" y="10" width="46" height="18" fill="#C4161C"/><text x="123" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Exit</text>
+      <text x="154" y="24" font-size="13" font-weight="800" fill="#fff">to the street</text><path d="M254,26v-13m-6,5l6,-7l6,7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      ${person(180,160,1.3,'#2E3A4B')}${lab(240,58,'Daylight at the top')}${lab(10,212,'Stairs up')}`,'Drawing: stairs going up to daylight, under a sign with a red box that says Exit');},
+  entrance(pic){const h=hang(190,84,{top:pic.name,bullets:[pic.line]},{fs:14});let bars='',win='';
+    for(let x=118;x<=262;x+=16)bars+=`<rect x="${x}" y="134" width="3" height="46" fill="#1E6B3A"/>`;
+    [[12,34],[48,34],[84,34],[12,70],[48,70],[262,48],[298,48],[334,48],[142,14],[178,14],[214,14],[142,48],[214,48]].forEach(([x,y])=>win+=`<rect x="${x}" y="${y}" width="18" height="24" fill="#8FA3B5"/>`);
+    return P(`<rect width="360" height="220" fill="#CFE6F7"/><rect y="20" width="120" height="160" fill="#B8B2A6"/><rect x="130" width="110" height="180" fill="#A9A398"/><rect x="250" y="34" width="110" height="146" fill="#C2BBAE"/>${win}
+      <rect y="178" width="360" height="42" fill="#C8C4BC"/><rect x="114" y="132" width="152" height="50" fill="#2A2E35"/>
+      <rect x="126" y="150" width="128" height="2" fill="#6B7480"/><rect x="134" y="162" width="112" height="2" fill="#6B7480"/><rect x="142" y="172" width="96" height="2" fill="#6B7480"/>
+      ${bars}<rect x="110" y="130" width="160" height="5" fill="#1E6B3A"/>
+      <rect x="84" y="74" width="5" height="106" fill="#1E6B3A"/><circle cx="86.5" cy="60" r="14" fill="#2FB45A" stroke="#1E6B3A" stroke-width="3"/>
+      <rect x="${h.x+8}" y="${84+h.h}" width="4" height="${46-h.h}" fill="#1E6B3A"/><rect x="${h.x+h.w-12}" y="${84+h.h}" width="4" height="${46-h.h}" fill="#1E6B3A"/>${h.s}
+      ${person(310,206,1.4,'#2E3A4B')}${lab(10,32,'Green lamp')}${lab(190,206,'Stairs down to the trains','middle')}`,`Drawing: a subway entrance on the street. Green railings around stairs going down, a green lamp on a post, and a black sign that says ${pic.name}`);},
+  board(){let rows='';for(let i=0;i<4;i++){const y=78+i*20;rows+=`<rect x="46" y="${y}" width="38" height="8" rx="2" fill="#E8EAED"/><rect x="104" y="${y}" width="30" height="8" rx="2" fill="#E8EAED"/><rect x="156" y="${y}" width="${[96,70,110,84][i]}" height="8" rx="2" fill="#E8EAED"/><rect x="286" y="${y}" width="24" height="8" rx="2" fill="${i===1?'#FCCC0A':'#E8EAED'}"/>`}
+    const hd=(x,t)=>`<text x="${x}" y="66" font-size="10" font-weight="600" fill="#9AA3AE">${t}</text>`;
+    return P(`<rect width="360" height="220" fill="#DCD6C8"/><rect x="30" y="20" width="300" height="142" rx="4" fill="#111316"/>
+      <text x="46" y="44" font-size="14" font-weight="800" fill="#fff">DEPARTURES</text>${hd(46,'TIME')}${hd(104,'TRAIN')}${hd(156,'TO')}${hd(280,'TRACK')}
+      ${rows}<rect x="38" y="92" width="284" height="20" rx="3" fill="none" stroke="#FCCC0A" stroke-width="3"/>
+      <rect y="190" width="360" height="30" fill="#EDE8DD"/><path d="M298,113V170" stroke="#12151A" stroke-width="2"/>
+      <path d="M70,113V170" stroke="#12151A" stroke-width="2"/>
+      ${lab(350,184,'The track number shows here','end')}${lab(40,184,'Your train')}`,'Drawing: the big departures board. One row is your train, and the track number shows at the end of the row');}
+};
+function picHTML(pic,sign,thumb){
+  if(!pic)return'';
+  const own=S.photos[pic.key];
+  return`<figure class="pic">${own?`<img src="${own}" alt="Photo of this step, added by your family">`:SCENE[pic.k](pic,sign)}${thumb?'':`<figcaption>${own?'Photo added by your family.':'Drawing of what to look for. The real place can look a little different.'}</figcaption>`}</figure>`;
+}
+
+
+/* ---------- Routing over the two lines ---------- */
+function lineStops(line,weekend){return (line==='E'?E_LINE:F_LINE).filter(s=>weekend||!s.wk)}
+const onE=id=>E_LINE.some(s=>s.id===id), onF=id=>F_LINE.some(s=>s.id===id);
+function seg(line,a,b,weekend){
+  const all=lineStops(line,weekend),i=all.findIndex(s=>s.id===a),j=all.findIndex(s=>s.id===b);
+  const stops=i<j?all.slice(i,j+1):all.slice(j,i+1).reverse(), dir=i<j?'Q':'M';
+  const leg={line,dir,stops,towards:TOWARDS[line+dir],sims:[]};
+  const prev=all[i+(dir==='Q'?-1:1)];
+  if(line==='E'&&dir==='Q'&&MANH_TRUNK.includes(a)&&stops.some(s=>s.id==='7av'))
+    leg.sims.push({label:'Took the C train by mistake',station:'59 St–Columbus Circle',ll:[40.768296,-73.981736],why:'This is not an E train stop. You are on an A or C train.',fix:'Get off here. Go to the Downtown platform. Take any A or C train back to 42 St–Port Authority. There, follow the signs for the E train to Queens.'});
+  if(prev) leg.sims.push({label:'Went the wrong direction',station:prev.n,ll:LL[prev.id],why:'This station is the opposite way from your route.',
+    fix:prev.id==='23'?'Stay on for one more stop, to 14 St. Get off there. Follow the signs for Uptown and Queens, and take the E train.':`Get off here. Follow the signs to the other platform, the side for ${TOWARDS[line+dir]}. Take the ${line} train again.`});
+  const past=all[j+(dir==='Q'?1:-1)];
+  if(past)leg.sims.push({label:'We passed our stop',station:past.n,ll:LL[past.id],why:`This is one stop after ${stops.at(-1).n}.`,fix:`Get off here. Follow the signs to the other platform, for trains going the opposite way. Ride back one stop to ${stops.at(-1).n}.`});
+  return leg;
+}
+function plan(from,to,weekend){
+  if(from===to)return[];
+  if(onE(from)&&onE(to))return[seg('E',from,to,weekend)];
+  if(onF(from)&&onF(to))return[seg('F',from,to,weekend)];
+  return onF(from)?[seg('F',from,'kew',weekend),seg('E','kew',to,weekend)]:[seg('E',from,'kew',weekend),seg('F','kew',to,weekend)];
+}
+function signFor(leg){
+  const a=leg.stops[0].id;
+  if(leg.line==='E'&&leg.dir==='Q'&&MANH_TRUNK.includes(a))return{top:'Uptown & Queens',bullets:['C','E'],sub:'Take the E only. Not the A. Not the C.'};
+  if(leg.line==='E'&&leg.dir==='Q')return{top:'Queens',bullets:['E'],sub:'Jamaica Center'};
+  if(leg.line==='E'&&MANH_TRUNK.includes(a))return{top:'Downtown',bullets:['E'],sub:'World Trade Center'};
+  if(leg.line==='E')return{top:'Manhattan',bullets:['E'],sub:'World Trade Center'};
+  return leg.dir==='Q'?{top:'Jamaica',bullets:['F'],sub:'Jamaica–179 St'}:{top:'Manhattan',bullets:['F'],sub:'Trains to Manhattan'};
+}
+function buildJourney(o){
+  const legs=plan(o.from,o.to,o.weekend), st=[], rel=S.set.relName||'your relative';
+  if(o.start==='amtrak'){
+    st.push({pic:{k:'amtrak',key:'amtrak-platform'},t:'Get off the Amtrak train',b:'Take all your bags. On the platform, go up the escalator or the elevator. Follow the signs that say Moynihan Train Hall or 8th Avenue.'});
+    st.push({pic:{k:'hall',key:'moynihan-hall'},t:'Use the restroom in the hall',b:'You are now in a big hall with a glass roof. The restrooms here are free and clean. The subway has no restrooms, and the ride home is close to one hour.',tip:'This hall has free Wi-Fi. It is a good place to call family before you go down to the subway.'});
+    st.push({pic:{k:'overhead',key:'moynihan-ace',arrow:'down'},t:'Follow the blue A C E signs',sign:{top:'Subway',bullets:['A','C','E'],sub:'8th Avenue'},b:'Walk toward the 8th Avenue side of the hall. Follow the signs with these three blue circles. They lead you down an escalator to the subway.',ask:'Excuse me, where is the E train to Queens?'});
+  }else if(legs.length&&o.start==='home'){
+    st.push({pic:{k:'entrance',key:'entrance-'+o.from,name:nm(o.from),line:legs[0].line},t:`Go to ${nm(o.from)} station`,b:'Take your phone, your bank card and a bottle of water. Walk or get a ride to the subway station. The stairs down to the subway have a green lamp on a post.',link:{label:'Open the walking map to the station',href:maps(nm(o.from)+' subway station, Queens, NY')}});
+  }else if(legs.length){
+    st.push({pic:{k:'entrance',key:'entrance-'+o.from,name:nm(o.from),line:legs[0].line},t:`Walk to ${nm(o.from)} station`,b:'Look for the stairs going down with a green lamp on a post and the name of the station.',link:{label:'Open the walking map to the station',href:maps(nm(o.from)+' subway station, New York, NY')}});
+  }
+  if(legs.length){
+    st.push({pic:{k:'gate',key:'gate'},t:'Pay at the gate',b:'Tap your bank card or your phone on the small screen at the gate. Each person taps one time. It costs $3.00 each. When the screen says GO, walk through.',tip:'Use the same card every time. After 12 paid rides in 7 days, the next rides are free.'});
+    const l0=legs[0];
+    st.push({pic:{k:'platform',key:`platform-${o.from}-${l0.line}${l0.dir}`,line:l0.line},t:`Find the ${l0.line} train`,sign:signFor(l0),b:l0.line==='E'&&l0.dir==='Q'&&MANH_TRUNK.includes(l0.stops[0].id)
+      ?'Go to the side that says Uptown & Queens. Other blue trains, the A and the C, stop near here too. Take only the E. The train shows a blue circle with the letter E and the words Jamaica Center.'
+      :`Follow the signs that look like this. Before you get on, check the train. It must show the letter ${l0.line} in a ${COLOR[l0.line]} circle.`,ask:`Excuse me, is this the ${l0.line} train to ${l0.towards}?`});
+    legs.forEach((leg,k)=>{
+      if(k>0)st.push({pic:{k:'platform',key:`transfer-${leg.line}${leg.dir}`,line:leg.line},t:'Change trains here',sign:signFor(leg),b:`Do not go up the stairs. Stay on this same platform. Wait for the ${COLOR[leg.line]} ${leg.line} train. It can arrive on either side of the platform.`,ask:`Excuse me, is this the ${leg.line} train to ${leg.towards}?`});
+      st.push({type:'ride',pic:{k:'train',key:`train-${leg.line}${leg.dir}`,line:leg.line,towards:leg.towards},t:`Ride the ${leg.line} train`,leg});
+    });
+  }
+  const e=o.end;
+  if(e.kind==='home'){
+    st.push({pic:legs.length?{k:'exit',key:'exit-'+o.to}:null,t:legs.length?'You are at your station':'You are near home',b:`Go up the stairs to the street. Call ${rel} to meet you. If nobody can come, book a car for the last part of the way.`,tip:homeWalk(),homeActions:true});
+  }else if(e.kind==='amtrak'){
+    st.push({pic:{k:'overhead',key:'penn-to-moynihan',arrow:'up'},t:'Walk to Moynihan Train Hall',sign:{top:'Moynihan Train Hall',bullets:[],sub:'Amtrak'},b:'Do not go up to the street. Inside the station, follow the signs that say Moynihan Train Hall and Amtrak. Take the escalator up into the big hall with the glass roof.',ask:'Excuse me, where is the Amtrak train hall?'});
+    st.push({pic:{k:'board',key:'moynihan-board'},t:`Find your train to ${e.dest}`,b:'Look at the big board. Find your train number. The track number appears about 10 to 15 minutes before the train leaves. Sit in the waiting area until then. Restrooms are in this hall.'});
+  }else{
+    st.push({pic:legs.length?{k:'exit',key:'exit-'+o.to}:null,t:`Walk to ${e.place.name}`,b:(legs.length?'Go up the stairs to the street. ':'')+(e.place.walk||'Open the walking map and follow the blue line.'),link:{label:'Open the walking map',href:maps(e.place.name+', '+e.place.addr)}});
+    st.push({t:'You are here',b:'Enjoy your visit. When you want food, a mosque or a restroom, press Nearby at the bottom of the screen.'});
+  }
+  return{title:o.title,steps:st,legs,to:o.to,from:o.from};
+}
+
+/* ---------- Progress shared with the family phone ---------- */
+function whereNow(){
+  const j=S.journey;
+  if(j){const s=j.steps[j.i];if(s.type==='ride'){const r=j.ride;return (r.off?r.off.station:s.leg.stops[r.idx].n)+' subway station'}
+    if(j.pos)return j.pos+' subway station';
+    if(j.start==='amtrak')return'Moynihan Train Hall, 421 8th Ave';
+    return nm(j.from)+' subway station'}
+  return nm(S.at||dayStart(dayObj()))+' subway station';
+}
+function report(){
+  const j=S.journey;if(!j)return;const s=j.steps[j.i];let text;
+  if(s.type==='ride'){const r=j.ride,ss=s.leg.stops,left=ss.length-1-r.idx;
+    text=r.off?`Off the route at ${r.off.station}. The guide is showing how to get back.`:!r.boarded?`Waiting for the ${s.leg.line} train at ${ss[0].n}.`:left?`On the ${s.leg.line} train at ${ss[r.idx].n}. ${left} ${left===1?'stop':'stops'} left.`:`Arrived at ${ss[r.idx].n}.`}
+  else text=`${j.title}. Step ${j.i+1} of ${j.steps.length}: ${s.t}.`;
+  S.progress={text,time:new Date()};
+}
+function enterStep(){const j=S.journey,s=j.steps[j.i];j.ride=s.type==='ride'?{idx:0,boarded:false,off:null}:null;report()}
+
+/* ---------- Views: parents ---------- */
+function signHTML(g){return`<div><div class="sign" role="img" aria-label="Station sign: ${esc(g.top)} ${g.bullets.join(' ')} ${esc(g.sub)}"><div class="sign-top"><span>${esc(g.top)}</span>${g.bullets.length?`<span class="bs">${g.bullets.map(bullet).join('')}</span>`:''}</div><div class="sign-sub">${esc(g.sub)}</div></div><p class="sign-cap">Look for a black sign like this one.</p></div>`}
+function legsList(legs,first,last){
+  const li=[first&&`<li><span>${first}</span></li>`,...legs.map(l=>`<li><span class="ln">${bullet(l.line)} <b>${l.line} train</b>, ${l.stops.length-1} stops. Get off at ${esc(l.stops.at(-1).n)}.</span></li>`),last&&`<li><span>${last}</span></li>`].filter(Boolean);
+  return`<ol class="route">${li.join('')}</ol>`;
+}
+function dayView(){
+  const d=dayObj(),wk=isWeekend(d),h=home();let body='';
+  if(d.kind==='arrive'){
+    const legs=plan('penn',h,wk),done=S.done[d.id+':arrive'],arr=S.set[d.arrKey];
+    const arrInfo=arr?`<div class="tip">Your train arrives at about <b>${clock(arr).text}</b>. You should reach ${esc(nm(h))} station at about <b>${clock(arr,-90).text}</b>.${clock(arr).mins>=1080?` It will be dark by then. Ask ${esc(S.set.relName||'your relative')} to meet you at the station.`:''}</div>`:'';
+    body=`${arrInfo}<p class="lead">Your train arrives at Moynihan Train Hall in Penn Station. This guide takes you from the train door to ${esc(nm(h))} station.</p>
+      ${legsList(legs,'Walk from the train to the subway. About 10 minutes.',`Meet ${esc(S.set.relName||'your relative')} at the station, or take a car.`)}
+      ${done?'<span class="done-pill">Done today</span>':''}
+      <button type="button" class="btn primary" data-act="start" data-kind="arrive">${done?'Start the guide again':'Start the guide'}</button>`;
+  }else if(d.kind==='depart'){
+    const legs=plan(h,'penn',wk),dep=S.set[d.depKey];
+    const when=dep?`<div class="banner warn">Leave home by ${clock(dep,135).text}<p>Your train leaves at ${clock(dep).text}.</p></div>`:`<div class="tip">Ask family what time to leave home.</div>`;
+    body=`${when}<p class="lead">This guide takes you from home to your Amtrak train at Moynihan Train Hall.</p>
+      ${legsList(legs,`Go to ${esc(nm(h))} station.`,'Walk inside the station to Moynihan Train Hall.')}
+      <button type="button" class="btn primary" data-act="start" data-kind="depart">Start the guide</button>`;
+  }else if(d.kind==='visit'){
+    const at=S.at||h, list=S.places.filter(p=>p.type==='sight'&&p.on&&p.day===d.id);
+    const items=list.map((p,i)=>{const done=S.done[d.id+':sight:'+p.id];return`<li><div class="stack" style="grid-column:2">
+        <h3>${esc(p.name)} ${done?'<span class="done-pill">Visited</span>':''}</h3>
+        <p class="muted">${p.stop===at?'A short walk from where you are.':`E train to ${esc(nm(p.stop))}.`}</p>
+        <button type="button" class="btn ${done?'':'primary'}" data-act="start" data-kind="sight" data-id="${p.id}">Guide me there</button></div></li>`}).join('');
+    body=list.length?`<p class="lead">Go in this order. Press one button at a time. The guide shows each step.</p><ol class="route">${items}</ol>
+      <button type="button" class="btn" data-act="start" data-kind="home" ${at===h?'disabled style="opacity:.5"':''}>Guide me home</button>
+      <p class="muted">You are now near ${esc(nm(at))} station.</p>`
+      :`<p class="lead">No places are planned for this day yet. Family can add them in Setup.</p>`;
+  }else{
+    body=`<p class="lead">You are with your relative in Niagara Falls and Toronto. Rest. You do not need this guide until Tuesday 20 October.</p>`;
+  }
+  return`<section class="card"><span class="eyebrow">${esc(d.label)}</span><h2>${esc(d.title)}</h2>${body}</section>`;
+}
+function stepView(s,j){
+  const a=[];
+  if(s.pic)a.push(picHTML(s.pic,s.sign));else if(s.sign)a.push(signHTML(s.sign));
+  a.push(`<p class="lead">${esc(s.b)}</p>`);
+  if(s.link)a.push(`<a class="btn" href="${s.link.href}" target="_blank" rel="noopener">${esc(s.link.label)}</a>`);
+  if(s.homeActions){
+    const st=S.set;
+    if(st.relPhone)a.push(`<a class="btn" href="${tel(st.relPhone)}">Call ${esc(st.relName||'relative')}</a><p class="phone">${esc(st.relPhone)}</p>`);
+    if(st.homeAddr)a.push(`<a class="btn" href="${maps(st.homeAddr)}" target="_blank" rel="noopener">Open the walking map to the house</a>`);
+    a.push(`<button type="button" class="btn" data-act="tab" data-v="help">I need a car</button>`);
+  }
+  if(s.tip)a.push(`<div class="tip">${esc(s.tip)}</div>`);
+  if(s.ask)a.push(`<div class="ask"><span class="muted">Not sure? Show this to any worker in uniform.</span><q>${esc(s.ask)}</q></div>`);
+  return a.join('');
+}
+function rideView(s,j){
+  const leg=s.leg,r=j.ride,ss=leg.stops,last=ss.length-1,left=last-r.idx,dest=ss[last].n,a=[];
+  a.push(`<div class="sign" role="img" aria-label="${leg.line} train to ${esc(leg.towards)}"><div class="sign-top">${bullet(leg.line)} to ${esc(leg.towards)}</div></div>`);
+  if(r.asking){
+    a.push(`<p class="lead">Read the station name on the wall or on a sign. What does it say?</p>
+      ${leg.sims.map((m,i)=>`<button type="button" class="btn" data-act="sim" data-i="${i}">${esc(m.station)}</button>`).join('')}
+      <button type="button" class="btn" data-act="sim" data-i="-1">A different name, or I am not sure</button>
+      <button type="button" class="btn primary" data-act="fixed">All is fine. Go back to the list</button>`);
+    return a.join('');
+  }
+  if(r.off){
+    a.push(`<div class="banner bad">Wrong way. You are at ${esc(r.off.station)}.<p>${esc(r.off.why)}</p></div>
+      <div class="card" style="border-width:2px;border-color:var(--ink)"><span class="eyebrow">Do this now</span><p class="lead">${esc(r.off.fix)}</p></div>
+      <div class="ask"><span class="muted">Or show this to any worker in uniform.</span><q>Excuse me, how do I get to the ${leg.line} train to ${esc(leg.towards)}?</q></div>
+      <button type="button" class="btn primary" data-act="fixed">I am back on the ${leg.line} train</button>
+      <button type="button" class="btn" data-act="tab" data-v="help">I need help</button>`);
+    return a.join('');
+  }
+  if(!r.boarded){
+    a.push(`${picHTML(s.pic)}<p class="lead">Wait on the platform at <b>${esc(ss[0].n)}</b>. Get on the train that shows ${bullet(leg.line)} and the words <b>${esc(leg.towards)}</b>.</p>
+      <p class="lead">You will ride <b>${last} stops</b> and get off at <b>${esc(dest)}</b>.</p>
+      <button type="button" class="btn primary" data-act="board">I am on the train</button>`);
+  }else{
+    a.push(`<div class="status"><div class="big-n" aria-hidden="true">${left}</div><dl>
+      <div><dt>${left===1?'Stop left':'Stops left'}</dt><dd>Now at ${esc(ss[r.idx].n)}</dd></div>
+      <div><dt>Get off at</dt><dd>${esc(dest)}</dd></div></dl></div>`);
+    if(left>1)a.push(`<p class="lead">The stop just before yours is <b>${esc(ss[last-1].n)}</b>.</p>`);
+    if(left===1)a.push(`<div class="banner warn">The next stop is yours.<p>Stand up, hold the pole, and move close to the door.</p></div>`);
+    if(left===0)a.push(`<div class="banner go">Get off the train now. This is ${esc(dest)}.</div>`);
+  }
+  a.push(`<ol class="stops" style="--lc:var(--${leg.line.toLowerCase()}-line)">${ss.map((x,i)=>{
+    const c=r.boarded&&i<r.idx?'done':i===r.idx?'here':'';
+    return`<li class="${c}"><span class="dot"></span><span>${esc(x.n)}${i===r.idx?'<span class="tag you">You are here</span>':''}${i===last&&i!==r.idx?'<span class="tag">Get off here</span>':''}</span></li>`}).join('')}</ol>`);
+  if(r.boarded&&left>0){
+    a.push(`<button type="button" class="btn" data-act="tick">The train stopped at the next station</button>
+      <p class="muted">The list moves by itself when the phone can find where it is. In tunnels it often cannot. Then press the button above at each station, or read the station name on the wall and find it in the list.</p>
+      <p class="muted">If the train stops at a station that is not on this list, stay on. Some trains make extra stops. Get off only at your station.</p>
+      <div class="demo-row">${r.idx>0?`<button type="button" class="btn small" data-act="untick">Go back one stop</button>`:''}<button type="button" class="btn small" data-act="wrongAsk">Something looks wrong</button></div>`);
+  }
+  return a.join('');
+}
+function playerView(){
+  const j=S.journey,s=j.steps[j.i],n=j.steps.length,isRide=s.type==='ride';
+  const atDest=isRide&&j.ride.boarded&&!j.ride.off&&j.ride.idx===s.leg.stops.length-1;
+  const next=isRide?(atDest?`<button type="button" class="btn primary" data-act="next">I got off the train</button>`:'')
+    :`<button type="button" class="btn primary" data-act="next">${j.i===n-1?'Finish':'Done. Next step'}</button>`;
+  return`<section class="card">
+    <div class="jhead"><span class="eyebrow">${esc(j.title)}</span><span class="count">Step ${j.i+1} of ${n}</span></div>
+    <div class="bar" aria-hidden="true">${j.steps.map((_,i)=>`<i class="${i<=j.i?'on':''}"></i>`).join('')}</div>
+    <h2>${esc(s.t)}</h2>
+    ${isRide?rideView(s,j):stepView(s,j)}
+    ${next}
+    ${j.i>0&&!(isRide&&j.ride.boarded)?`<button type="button" class="btn" data-act="back">Go back one step</button>`:''}
+    <button type="button" class="linkbtn" data-act="quit">Stop this guide</button>
+  </section>`;
+}
+function todayView(){
+  if(S.journey)return playerView();
+  return`<div class="days" role="group" aria-label="Choose the day">${DAYS.map(d=>`<button type="button" data-act="day" data-v="${d.id}" aria-pressed="${d.id===S.day}">${esc(d.label)}</button>`).join('')}</div>${dayView()}`;
+}
+function areaOf(stop){
+  if(['penn','23','14','w4'].includes(stop))return'penn';
+  if(['pabt','50','7av'].includes(stop))return'times';
+  if(['5av','lex'].includes(stop))return'rock';
+  if(['wtc','canal','spring'].includes(stop))return'wtc';
+  if(['179','169','parF','sutF','jc','sutA','vw','bri','briF','kew'].includes(stop))return'jam';
+  return'penn';
+}
+function nearbyView(){
+  const f=S.area?null:freshFix(180),M=60,GRID=1.3;let key=S.area||areaOf(S.at||dayStart(dayObj()));
+  if(f){key=Object.keys(AREAS).sort((a,b)=>dist(f.lat,f.lng,AREAS[a].lat,AREAS[a].lng)-dist(f.lat,f.lng,AREAS[b].lat,AREAS[b].lng))[0];GEO.lastDraw=Date.now()}
+  const A=f?{n:'Where you are now',lat:f.lat,lng:f.lng}:AREAS[key];
+  const items=S.places.filter(p=>p.on&&(S.filter==='all'||p.type===S.filter)).map(p=>{
+    if(p.lat==null)return p.area===key?{...p,min:null}:null;
+    const dx=(p.lng-A.lng)*Math.cos(A.lat*Math.PI/180)*111320,dy=(p.lat-A.lat)*110540,min=Math.max(1,Math.round(Math.hypot(dx,dy)*GRID/M));
+    return min<=20?{...p,dx,dy,min}:null}).filter(Boolean).sort((a,b)=>(a.min??99)-(b.min??99));
+  items.forEach((p,i)=>p.n=i+1);
+  const k=140/(20*M/GRID),pts=items.filter(p=>p.min!=null).map(p=>({n:p.n,type:p.type,x:p.dx*k,y:-p.dy*k}));
+  for(let it=0;it<40;it++)for(let i=0;i<pts.length;i++){
+    const a=pts[i],c=Math.hypot(a.x,a.y);if(c<26){const an=c?Math.atan2(a.y,a.x):i;a.x=Math.cos(an)*26;a.y=Math.sin(an)*26}
+    for(let q=0;q<i;q++){const b=pts[q],dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy);if(d<28){const an=d?Math.atan2(dy,dx):i*2.4,m=(28-d)/2;a.x+=Math.cos(an)*m;a.y+=Math.sin(an)*m;b.x-=Math.cos(an)*m;b.y-=Math.sin(an)*m}}}
+  const svg=`<svg class="radar" viewBox="-172 -172 344 344" role="img" aria-label="Map of saved places around ${esc(A.n)}. North is up.">
+    ${[5,10,15,20].map(m=>`<circle class="ring" cx="0" cy="0" r="${m*7}"/><text class="rl" x="4" y="${-m*7+13}">${m} min</text>`).join('')}
+    <text class="rl" x="0" y="-158" text-anchor="middle">NORTH</text>
+    ${pts.map(p=>`<g class="pin t-${p.type}"><circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="13"/><text x="${p.x.toFixed(1)}" y="${(p.y+4.5).toFixed(1)}" text-anchor="middle">${p.n}</text></g>`).join('')}
+    <circle class="you" cx="0" cy="0" r="9"/><text class="youl" x="0" y="26" text-anchor="middle">YOU</text></svg>`;
+  const list=items.length?`<ol class="places">${items.map(p=>`<li class="t-${p.type}"><span class="num">${p.n}</span><div class="pl-main">
+      <span class="pl-type">${TYPE[p.type]}</span><span class="pl-name">${esc(p.name)}</span>
+      <span class="muted">${esc(p.addr)}</span>${p.note?`<span>${esc(p.note)}</span>`:''}
+      <div class="pl-row"><span class="walk">${p.min==null?'Added by family':`About ${p.min} min walk`}</span>
+      <a class="btn small" href="${maps(p.name+', '+p.addr)}" target="_blank" rel="noopener">Walking map</a></div></div></li>`).join('')}</ol>`
+    :`<p class="lead">No saved places within a 20 minute walk of here. Family can add more in Setup.</p>`;
+  const F=[['all','All'],['food','Halal food'],['mosque','Mosque'],['wc','Restroom'],['sight','Places to visit']];
+  return`<section class="card"><span class="eyebrow">Near you</span><h2>${esc(A.n)}</h2>
+    <p class="muted">${f?'Using the location of this phone.':GEO.state==='denied'?'Location is turned off for this app. Choose an area.':'This phone has not found its location yet. Choose an area, or wait a moment.'}</p>
+    <div class="chips" role="group" aria-label="Area"><button type="button" data-act="area" data-v="" aria-pressed="${!!f}">My location</button>${Object.entries(AREAS).map(([id,a])=>`<button type="button" data-act="area" data-v="${id}" aria-pressed="${!f&&id===key}">${esc(a.n)}</button>`).join('')}</div>
+    <div class="chips" role="group" aria-label="Kind of place">${F.map(([id,l])=>`<button type="button" data-act="filter" data-v="${id}" aria-pressed="${id===S.filter}">${l}</button>`).join('')}</div>
+    ${svg}<p class="muted">Each ring is 5 more minutes of slow walking. The map is drawn from saved places, so it does not need internet.</p>
+    ${list}
+    ${S.filter==='all'||S.filter==='food'?'<div class="tip">Look for the halal sign or certificate at the door before you order.</div>':''}</section>`;
+}
+function helpView(){
+  const st=S.set,dest=st.homeAddr||nm(home())+' subway station, Queens';
+  const uber='https://m.uber.com/ul/?action=setPickup&pickup=my_location'+(st.homeAddr?'&dropoff[formatted_address]='+enc(st.homeAddr):'');
+  const callFam=st.famPhone?`<a class="btn alert" href="${tel(st.famPhone)}">Call ${esc(st.famName||'family')}</a><p class="phone">${esc(st.famPhone)}</p>`
+    :`<p class="lead">Your family has not added their phone number yet.</p>`;
+  return`<section class="card"><span class="eyebrow">Help</span><h2>Call family</h2>${callFam}
+      ${st.relPhone?`<a class="btn" href="${tel(st.relPhone)}">Call ${esc(st.relName||'relative in Jamaica')}</a><p class="phone">${esc(st.relPhone)}</p>`:''}</section>
+    <section class="card"><h2>I need a car</h2>
+      ${st.famPhone?`<a class="btn primary" href="${smsLink()}">Text family: book a car for us</a>
+      <a class="btn" href="${waLink()}" target="_blank" rel="noopener">Send the same message on WhatsApp</a>
+      <p class="muted">The message says where you are. Press Send in the message app. Then wait where you are. Family will book the car and call you.</p>`:''}
+      <a class="btn" href="${uber}" target="_blank" rel="noopener">Open Uber myself</a>
+      <p class="muted">You are near ${esc(whereNow())}.</p></section>
+    <section class="card"><h2>I am lost</h2><p class="lead">Show this card to a police officer, a station worker or a shopkeeper.</p>
+      <div class="showcard"><span class="lead">Hello. Please help us. We are visitors and we are trying to get to:</span>
+      <span class="phone" style="font-size:22px">${esc(dest)}</span>
+      ${st.famPhone?`<span>Our family's phone number is <b>${esc(st.famPhone)}</b>.</span>`:''}<span>Thank you.</span></div>
+      <p class="muted">In an emergency, call 911 from any phone.</p></section>`;
+}
+
+/* ---------- View: family ---------- */
+function depHint(key){const v=S.set[key];if(!v)return'Not set yet. The guide will say "Ask family what time to leave home".';const lb=clock(v,135);
+  return`Parents are told to leave home by ${lb.text}.`+(lb.mins<360?' That is before 6 AM, when trains come less often. A booked car is easier.':'')}
+function photoSlots(){
+  const h=home(),seen=new Set(),out=[];
+  [buildJourney({from:'penn',to:h,start:'amtrak',end:{kind:'home'},weekend:true,title:''}),
+   buildJourney({from:h,to:'penn',start:'home',end:{kind:'amtrak',dest:'the next city'},weekend:true,title:''})]
+    .forEach(j=>j.steps.forEach(s=>{if(s.pic&&!seen.has(s.pic.key)){seen.add(s.pic.key);out.push(s)}}));
+  return out;
+}
+function slotsHTML(){
+  return`<section class="card"><h2>Step pictures</h2><p class="hint">Each step shows a drawing. A real photo is easier to match. Take one yourself, ask your relative to take one, or save one from Google Street View, then add it here.</p>
+    ${S.photoMsg?`<p class="err" role="alert">${esc(S.photoMsg)}</p>`:''}
+    ${photoSlots().map(s=>{const k=s.pic.key,own=S.photos[k];return`<div class="slot">${picHTML(s.pic,s.sign,true)}<div class="stack" style="min-width:0"><b>${esc(s.t)}</b>
+      <label class="btn small" for="ph-${k}">${own?'Change my photo':'Use my own photo'}<input class="vh" type="file" accept="image/*" id="ph-${k}" data-photo="${k}"></label>
+      ${own?`<button type="button" class="linkbtn" style="align-self:flex-start;padding:4px" data-act="rmPhoto" data-id="${k}">Go back to the drawing</button>`:''}</div></div>`}).join('')}</section>`;
+}
+function familyView(){
+  const st=S.set,open=S.alerts.filter(a=>!a.done);
+  const alerts=open.map(a=>{const u='https://m.uber.com/ul/?action=setPickup&pickup[formatted_address]='+enc(a.where+', New York, NY')+(st.homeAddr?'&dropoff[formatted_address]='+enc(st.homeAddr):'');
+    return`<div class="banner bad">They asked for a car at ${fmtTime(a.time)}<p>Pickup: ${esc(a.where)}</p></div>
+      <a class="btn primary" href="${u}" target="_blank" rel="noopener">Open Uber with this pickup</a>
+      <p class="hint">In Uber, check the pin on the map, then change the rider to your parent so the driver calls their phone. You can follow the car on your own phone.</p>
+      <button type="button" class="btn" data-act="alertDone" data-id="${a.id}">Car is booked. Clear this.</button>`}).join('');
+  const sel=(id,opts,val)=>`<select id="${id}" data-set="${id.replace('set-','')}">${opts.map(([v,l])=>`<option value="${v}" ${v===val?'selected':''}>${esc(l)}</option>`).join('')}</select>`;
+  const inp=(k,label,type='text',ph='')=>`<div class="field"><label for="set-${k}">${label}</label><input id="set-${k}" type="${type}" data-set="${k}" value="${esc(st[k])}" placeholder="${esc(ph)}" autocomplete="off"></div>`;
+  const groups=['sight','food','mosque','wc'].map(t=>{const rows=S.places.filter(p=>p.type===t).map(p=>`<div class="fam-pl">
+      <input type="checkbox" id="on-${p.id}" data-pl="${p.id}" data-f="on" ${p.on?'checked':''} aria-label="Show ${esc(p.name)} to parents">
+      <div style="min-width:0"><label for="on-${p.id}"><b>${esc(p.name)}</b></label><div class="hint">${esc(p.addr)}</div>
+      <div class="ctl">${t==='sight'?`<select id="day-${p.id}" data-pl="${p.id}" data-f="day" aria-label="Day for ${esc(p.name)}">${[['','Not planned'],['11','Sun 11 Oct'],['12','Mon 12 Oct']].map(([v,l])=>`<option value="${v}" ${v===(p.day||'')?'selected':''}>${l}</option>`).join('')}</select>`:''}
+      <button type="button" class="linkbtn" style="padding:4px" data-act="rm" data-id="${p.id}">Remove</button></div></div></div>`).join('');
+    return`<h3>${TYPE[t]}</h3>${rows||'<p class="hint">None saved.</p>'}`}).join('');
+  const standalone=window.matchMedia&&matchMedia('(display-mode: standalone)').matches;
+  const tm=(k,label,dep)=>`<div class="field"><label for="set-${k}">${label}</label><input id="set-${k}" type="time" data-set="${k}" value="${esc(st[k])}">${dep?`<span class="hint" id="hint-${k}">${depHint(k)}</span>`:''}</div>`;
+  return`<section class="card"><span class="eyebrow">For family</span><h2>Setup</h2>
+      ${S.setupMsg?`<div class="banner go">${esc(S.setupMsg)}</div>`:''}${S.setupErr?`<p class="err" role="alert">${esc(S.setupErr)}</p>`:''}
+      <p class="lead">Everything on this screen is saved on this phone only.</p>
+      <ul class="checks">
+        <li>${S.offline?'Ready to work without internet.':'Not saved for offline use yet. Keep this page open with internet for a moment.'}</li>
+        <li>${standalone?'Installed on this phone.':'Not installed yet. In Chrome, open the menu with three dots and choose Add to Home screen.'}</li>
+        <li>${GEO.state==='on'?'Location is working.':GEO.state==='denied'?'Location is blocked. Allow it for this site in the Chrome site settings.':'Location is not turned on yet.'}</li>
+      </ul>
+      ${deferredInstall?`<button type="button" class="btn primary" data-act="install">Install this app on this phone</button>`:''}
+      ${GEO.state==='on'?'':`<button type="button" class="btn" data-act="geoOn">Allow location on this phone</button>`}
+      <a class="btn" href="https://www.mta.info/" target="_blank" rel="noopener">Check today's subway changes on mta.info</a></section>
+    <section class="card"><h2>Home and phone numbers</h2>
+      <div class="field"><label for="set-homeStop">Subway station closest to the relative's house</label>${sel('set-homeStop',HOME_OPTS,st.homeStop)}<span class="hint">The route to and from Penn Station changes with this.</span></div>
+      ${inp('homeAddr','Street address of the house','text','Number, street, Queens, NY')}
+      <div class="grid2">${inp('relName','Relative in Jamaica, name')}${inp('relPhone','Relative, phone','tel')}</div>
+      <div class="grid2">${inp('famName','Family to call, name')}${inp('famPhone','Family to call, phone','tel')}</div></section>
+    <section class="card"><h2>Amtrak train times</h2>
+      ${tm('arr10','Sat 10 Oct, train arrives in New York at')}
+      ${tm('dep13','Tue 13 Oct, train to Niagara Falls leaves at',true)}
+      ${tm('arr20','Tue 20 Oct, train arrives in New York at')}
+      ${tm('dep21','Wed 21 Oct, train to Washington DC leaves at',true)}</section>
+    <section class="card"><h2>Send this setup to another phone</h2>
+      <p class="hint">Plan on your own phone, then send this link by WhatsApp or text. Opening it on the other phone copies the address, phone numbers, train times and places to that phone. Photos are not included. The link holds private details, so send it only to family.</p>
+      <div class="field"><label for="share-link">Setup link</label><input id="share-link" type="text" readonly value="${esc(shareLink())}"></div>
+      <button type="button" class="btn" data-act="copyLink">Copy the link</button>${S.copyMsg?`<p class="hint" role="status">${esc(S.copyMsg)}</p>`:''}</section>
+    ${slotsHTML()}
+    <section class="card"><h2>Places</h2><p class="hint">This starter list is an example. Untick or remove what you do not want, and pick a day for each place to visit.</p>
+      ${groups}</section>
+    <section class="card"><h2>Add a place</h2>
+      ${`<div class="field"><label for="new-name">Name</label><input id="new-name" type="text" autocomplete="off"></div>
+      <div class="field"><label for="new-addr">Address</label><input id="new-addr" type="text" autocomplete="off" placeholder="Street and city"></div>
+      <div class="grid2"><div class="field"><label for="new-type">Kind</label><select id="new-type">${Object.entries(TYPE).map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select></div>
+      <div class="field"><label for="new-area">Near</label><select id="new-area">${Object.entries(AREAS).map(([v,a])=>`<option value="${v}">${esc(a.n)}</option>`).join('')}</select></div></div>
+      <div class="field"><label for="new-stop">Closest E train stop (only for places to visit)</label><select id="new-stop">${E_LINE.filter(s=>!s.wk).map(s=>`<option value="${s.id}" ${s.id==='penn'?'selected':''}>${esc(s.n)}</option>`).join('')}</select></div>`}
+      ${S.formErr?`<p class="err" role="alert">${esc(S.formErr)}</p>`:''}
+      <button type="button" class="btn primary" data-act="add">Add place</button>
+      <button type="button" class="linkbtn" data-act="resetPlaces">Put back the starter list</button></section>`;
+}
+
+/* ---------- Render and actions ---------- */
+function render(top){
+  const v=document.getElementById('view'),g=S.mode==='guide',open=S.alerts.filter(a=>!a.done).length;
+  const mb=document.getElementById('mode-btn');mb.textContent=g?'Setup':'Back to the guide';mb.dataset.v=g?'family':'guide';
+  v.className=g?'':'family';
+  v.innerHTML=g?(S.tab==='today'?todayView():S.tab==='nearby'?nearbyView():helpView()):familyView();
+  const tabs=document.getElementById('tabs');tabs.hidden=!g;
+  tabs.innerHTML=`<div class="tabs-in">${[['today',S.journey?'Guide':'Today'],['nearby','Nearby'],['help','Help']].map(([id,l])=>`<button type="button" class="${id}" data-act="tab" data-v="${id}" aria-pressed="${id===S.tab}">${l}</button>`).join('')}</div>`;
+  if(top)window.scrollTo(0,0);
+  saveNav();
+}
+const ACT={
+  mode(d){S.mode=d.v;S.setupMsg='';S.setupErr='';S.copyMsg='';render(true)},
+  tab(d){S.tab=d.v;if(d.v==='nearby')startGeo();render(true)},
+  day(d){S.day=d.v;S.at=null;S.area=null;render()},
+  area(d){S.area=d.v||null;startGeo();render()},
+  filter(d){S.filter=d.v;render()},
+  start(d,quiet){
+    const day=dayObj(),wk=isWeekend(day),h=home(),at=S.at||dayStart(day);let j;
+    if(d.kind==='arrive')j=buildJourney({from:'penn',to:h,start:'amtrak',end:{kind:'home'},weekend:wk,title:'Train to home'});
+    else if(d.kind==='depart')j=buildJourney({from:h,to:'penn',start:'home',end:{kind:'amtrak',dest:day.dest},weekend:wk,title:'Home to Amtrak'});
+    else if(d.kind==='sight'){const p=S.places.find(x=>x.id===d.id);j=buildJourney({from:at,to:p.stop,start:at===h?'home':'stop',end:{kind:'sight',place:p},weekend:wk,title:'To '+p.name})}
+    else j=buildJourney({from:at,to:h,start:'stop',end:{kind:'home'},weekend:wk,title:'Going home'});
+    S.journey={...j,i:0,ride:null,key:d.kind+(d.id?':'+d.id:''),kind:d.kind,pid:d.id||'',start:d.kind==='arrive'?'amtrak':''};enterStep();S.tab='today';if(quiet)return;startGeo();keepAwake();render(true);
+  },
+  next(){const j=S.journey,cur=j.steps[j.i];if(cur.type==='ride')j.pos=cur.leg.stops.at(-1).n;if(j.i===j.steps.length-1){S.at=j.to;S.area=null;S.done[S.day+':'+j.key]=true;S.progress={text:`Finished: ${j.title}. They are near ${nm(j.to)} station.`,time:new Date()};S.journey=null}else{j.i++;enterStep()}render(true)},
+  back(){const j=S.journey;j.i--;enterStep();render(true)},
+  quit(){S.journey=null;render(true)},
+  board(){S.journey.ride.boarded=true;report();render()},
+  tick(){const j=S.journey,r=j.ride,last=j.steps[j.i].leg.stops.length-1;if(r.idx<last)r.idx++;if(r.idx>=last-1)buzz();report();render(r.idx>=last-1)},
+  untick(){const r=S.journey.ride;if(r.idx>0)r.idx--;report();render()},
+  wrongAsk(){S.journey.ride.asking=true;render(true)},
+  sim(d){const j=S.journey,leg=j.steps[j.i].leg;j.ride.asking=false;j.ride.off=+d.i<0?{station:'a station that is not on your list',why:'You may be on a different train.',fix:'Get off at the next station. Stay inside the station. Do not go out through the exit gates. Then call family, or show the question below to a worker.'}:leg.sims[+d.i];report();render(true)},
+  fixed(){const r=S.journey.ride;r.off=null;r.asking=false;report();render(true)},
+  geoOn(){startGeo();render()},
+  install(){if(deferredInstall){deferredInstall.prompt();deferredInstall=null;render()}},
+  copyLink(){const link=shareLink(),el=document.getElementById('share-link');el.value=link;
+    const ok=()=>{S.copyMsg='Copied. Paste it into WhatsApp or a text message.';render()},no=()=>{el.focus();el.select();S.copyMsg='Press and hold the link above, then choose Copy.';};
+    try{navigator.clipboard.writeText(link).then(ok,no)}catch(e){no()}},
+  askRide(){S.alerts.push({id:'a'+Date.now(),time:new Date(),where:whereNow(),done:false});S.asked=true;render()},
+  alertDone(d){const a=S.alerts.find(x=>x.id===d.id);if(a)a.done=true;S.asked=false;render()},
+  rm(d){S.places=S.places.filter(p=>p.id!==d.id);save();render()},
+  rmPhoto(d){delete S.photos[d.id];savePhotos();S.photoMsg='';render()},
+  resetPlaces(){S.places=JSON.parse(JSON.stringify(DEFAULT_PLACES));save();render()},
+  add(){
+    const val=id=>document.getElementById(id).value.trim(),name=val('new-name'),addr=val('new-addr'),type=val('new-type');
+    if(!name||!addr){S.formErr='Type a name and an address, then press Add place.';render();return}
+    S.formErr='';S.places.push({id:'u'+Date.now(),type,name,addr,lat:null,lng:null,area:val('new-area'),on:true,note:'',...(type==='sight'?{stop:val('new-stop'),day:'',walk:''}:{})});save();render();
+  }
+};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(el&&!el.disabled&&ACT[el.dataset.act])ACT[el.dataset.act](el.dataset)});
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset&&t.dataset.set;if(!k)return;S.set[k]=t.value;save();const sl=document.getElementById('share-link');if(sl)sl.value=shareLink();
+  if(k==='homeStop'){S.at=null;S.journey=null}
+  if(k==='dep13'||k==='dep21')document.getElementById('hint-'+k).textContent=depHint(k)});
+document.addEventListener('change',e=>{const t=e.target,id=t.dataset&&t.dataset.pl;if(!id)return;const p=S.places.find(x=>x.id===id);if(!p)return;
+  if(t.dataset.f==='on')p.on=t.checked;else p.day=t.value;save()});
+
+document.addEventListener('change',e=>{const t=e.target,k=t.dataset&&t.dataset.photo;if(!k||!t.files||!t.files[0])return;
+  const fr=new FileReader();
+  fr.onload=()=>{const im=new Image();
+    im.onload=()=>{const m=Math.min(1,1000/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*m);c.height=Math.round(im.height*m);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.photos[k]=c.toDataURL('image/jpeg',.8);
+      S.photoMsg=savePhotos()?'':'The photo is showing now, but this phone has no room to keep it after the page closes. Remove another photo to make room.';render()};
+    im.onerror=()=>{S.photoMsg='That file did not open as a picture. Choose a JPG or PNG photo.';render()};
+    im.src=fr.result};
+  fr.readAsDataURL(t.files[0])});
+load();loadPhotos();importSetup();
+(function pickDay(){const now=new Date(),iso=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const d=DAYS.find(x=>x.date===iso);if(d)S.day=d.id;else if(iso>'2026-10-13'&&iso<'2026-10-20')S.day='away'})();
+function saveNav(){try{const j=S.journey;localStorage.setItem(STORE+'-nav',JSON.stringify({t:Date.now(),day:S.day,at:S.at,done:S.done,j:j?{kind:j.kind,pid:j.pid,i:j.i,ride:j.ride,pos:j.pos||''}:null}))}catch(e){}}
+function loadNav(){
+  try{const n=JSON.parse(localStorage.getItem(STORE+'-nav')||'null');if(!n||Date.now()-n.t>12*3600e3)return;
+    if(n.done&&typeof n.done==='object')S.done=n.done;if(n.day!==S.day)return;S.at=STOP[n.at]?n.at:null;
+    if(n.j){ACT.start({kind:n.j.kind,id:n.j.pid},true);const j=S.journey;
+      if(j&&n.j.i<j.steps.length){j.i=n.j.i;const st=j.steps[j.i];j.pos=n.j.pos||'';
+        j.ride=st.type==='ride'?{idx:Math.min(Math.max(0,(n.j.ride&&n.j.ride.idx)|0),st.leg.stops.length-1),boarded:!!(n.j.ride&&n.j.ride.boarded),off:null}:null}}
+  }catch(e){S.journey=null}
+}
+let WL=null,deferredInstall=null;
+async function keepAwake(){try{if('wakeLock' in navigator&&S.journey&&document.visibilityState==='visible')WL=await navigator.wakeLock.request('screen')}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')keepAwake()});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;if(S.mode==='family')render()});
+loadNav();render();
+if(S.journey)keepAwake();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});navigator.serviceWorker.ready.then(()=>{S.offline=true;if(S.mode==='family'&&!document.activeElement.matches('input,select'))render()})}
+try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(p=>{if(p.state==='granted')startGeo()})}catch(e){}
+</script>
+</body>
+</html>
